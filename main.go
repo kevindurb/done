@@ -11,7 +11,7 @@ import (
 
 func main() {
 	c := config.FromEnv()
-	a := app.New(&c)
+	a := app.New(c)
 	log.Printf("Listening: %s", c.ListenAddr)
 	http.ListenAndServe(c.ListenAddr, a.Router())
 }

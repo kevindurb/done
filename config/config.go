@@ -8,8 +8,8 @@ type Config struct {
 	DBPath     string
 }
 
-func FromEnv() Config {
-	return Config{
+func FromEnv() *Config {
+	return &Config{
 		ListenAddr: os.Getenv("LISTEN_ADDR"),
 		SecretKey:  os.Getenv("SECRET_KEY"),
 		DBPath:     os.Getenv("DB_PATH"),
