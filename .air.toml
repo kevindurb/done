@@ -1,0 +1,5 @@
+#:schema https://json.schemastore.org/any.json
+[build]
+cmd = "go build -o ./tmp/main ."
+include_ext = ["go", "sql"]
+stop_on_error = true

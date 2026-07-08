@@ -3,7 +3,6 @@ package app
 import (
 	"database/sql"
 	"log"
-	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -13,8 +12,6 @@ import (
 	"github.com/kevindurb/done/migrations"
 	"github.com/kevindurb/done/sqlcgen"
 
-	g "maragu.dev/gomponents"
-	h "maragu.dev/gomponents/html"
 	ghttp "maragu.dev/gomponents/http"
 )
 
