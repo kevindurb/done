@@ -4,3 +4,8 @@ INSERT INTO users (
   hash
 ) VALUES (?, ?)
 RETURNING *;
+
+-- name: GetUserByEmail :one
+SELECT *
+FROM users
+WHERE email = ?;

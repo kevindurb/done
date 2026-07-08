@@ -15,7 +15,7 @@ func (a *App) Router() chi.Router {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.Get("/", ghttp.Adapt(a.home))
+	r.With(a.requireAuth).Get("/", ghttp.Adapt(a.home))
 	r.Get("/login", ghttp.Adapt(a.loginShow))
 	r.Post("/login", a.login)
 	r.Get("/signup", ghttp.Adapt(a.signupShow))
