@@ -36,6 +36,32 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 	return i, err
 }
 
+const getTask = `-- name: GetTask :one
+SELECT id, user_id, done, description, created_at, updated_at
+FROM tasks
+WHERE user_id = ?
+AND id = ?
+`
+
+type GetTaskParams struct {
+	UserID int64
+	ID     int64
+}
+
+func (q *Queries) GetTask(ctx context.Context, arg GetTaskParams) (Task, error) {
+	row := q.db.QueryRowContext(ctx, getTask, arg.UserID, arg.ID)
+	var i Task
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Done,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const listTasks = `-- name: ListTasks :many
 SELECT id, user_id, done, description, created_at, updated_at
 FROM tasks

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/kevindurb/done/html"
+	"github.com/kevindurb/done/httpx"
 	"github.com/kevindurb/done/sqlcgen"
 	g "maragu.dev/gomponents"
 	h "maragu.dev/gomponents/html"
@@ -66,4 +67,21 @@ func (a *App) tasksCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/tasks/%d", task.ID), http.StatusFound)
+}
+
+func (a *App) tasksShow(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+	id := httpx.PathInt("id", r)
+	userID := a.mustUserID(r)
+	task, err := a.q.GetTask(r.Context(), sqlcgen.GetTaskParams{
+		ID:     id,
+		UserID: userID,
+	})
+
+	if err != nil {
+		log.Printf("Error getting task (%d) for user (%d): %v", id, userID, err)
+	}
+
+	return html.Layout(
+		h.H1(g.Text(task.Description)),
+	), nil
 }

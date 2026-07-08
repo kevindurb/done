@@ -10,3 +10,9 @@ SELECT *
 FROM tasks
 WHERE user_id = ?
 AND done = FALSE;
+
+-- name: GetTask :one
+SELECT *
+FROM tasks
+WHERE user_id = ?
+AND id = ?;

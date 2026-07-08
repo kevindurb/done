@@ -22,6 +22,7 @@ func (a *App) Router() chi.Router {
 	r.Post("/signup", a.signup)
 
 	r.With(a.requireAuth).Route("/tasks", func(r chi.Router) {
+		r.Get("/{id}", ghttp.Adapt(a.tasksShow))
 		r.Get("/", ghttp.Adapt(a.tasksList))
 		r.Get("/new", ghttp.Adapt(a.tasksNew))
 		r.Post("/", a.tasksCreate)
