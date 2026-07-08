@@ -30,6 +30,14 @@ func (a *App) userID(r *http.Request) (int64, error) {
 	return id, nil
 }
 
+func (a *App) mustUserID(r *http.Request) int64 {
+	id, err := a.userID(r)
+	if err != nil {
+		log.Panicf("Error getting userID: %v", err)
+	}
+	return id
+}
+
 func (a *App) isLoggedIn(r *http.Request) bool {
 	id, err := a.userID(r)
 	return err == nil && id > 0
