@@ -18,6 +18,20 @@ type loginBody struct {
 func (a *App) loginShow(w http.ResponseWriter, r *http.Request) (g.Node, error) {
 	return html.Layout(
 		h.H1(g.Text("Login")),
+		h.Form(
+			h.Method(http.MethodPost),
+			h.Action("/login"),
+			h.Div(
+				h.Label(h.For("email"), g.Text("Email")),
+				h.Input(h.Type("email"), h.ID("email"), h.Name("Email")),
+			),
+			h.Div(
+				h.Label(h.For("password"), g.Text("Password")),
+				h.Input(h.Type("password"), h.ID("password"), h.Name("Password")),
+			),
+			h.Button(h.Type("submit"), g.Text("Login")),
+			h.A(h.Href("/signup"), g.Text("Signup")),
+		),
 	), nil
 }
 
