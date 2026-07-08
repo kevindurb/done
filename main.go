@@ -2,19 +2,15 @@ package main
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/kevindurb/done/app"
+	"github.com/kevindurb/done/config"
 )
 
 func main() {
-	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Timeout(60 * time.Second))
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello world"))
-	})
-	http.ListenAndServe(":3000", r)
+	c := config.FromEnv()
+
+	a := app.New(&c)
+
+	http.ListenAndServe(c.ListenAddr, a.Router())
 }
