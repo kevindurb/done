@@ -5,8 +5,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-
-	ghttp "maragu.dev/gomponents/http"
 )
 
 func (a *App) Router() chi.Router {
@@ -15,16 +13,18 @@ func (a *App) Router() chi.Router {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.With(a.requireAuth).Get("/", ghttp.Adapt(a.home))
-	r.Get("/login", ghttp.Adapt(a.loginShow))
+	r.With(a.requireAuth).Get("/", a.home)
+	r.Get("/login", a.loginShow)
 	r.Post("/login", a.login)
-	r.Get("/signup", ghttp.Adapt(a.signupShow))
+	r.Get("/signup", a.signupShow)
 	r.Post("/signup", a.signup)
 
 	r.With(a.requireAuth).Route("/tasks", func(r chi.Router) {
-		r.Get("/{id}", ghttp.Adapt(a.tasksShow))
-		r.Get("/", ghttp.Adapt(a.tasksList))
-		r.Get("/new", ghttp.Adapt(a.tasksNew))
+		r.Get("/{id}", a.tasksShow)
+		r.Post("/{id}/done", a.tasksMarkDone)
+		r.Get("/", a.tasksList)
+		r.Get("/done", a.tasksListDone)
+		r.Get("/new", a.tasksNew)
 		r.Post("/", a.tasksCreate)
 	})
 

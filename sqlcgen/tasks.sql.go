@@ -98,3 +98,67 @@ func (q *Queries) ListTasks(ctx context.Context, userID int64) ([]Task, error) {
 	}
 	return items, nil
 }
+
+const listTasksDone = `-- name: ListTasksDone :many
+SELECT id, user_id, done, description, created_at, updated_at
+FROM tasks
+WHERE user_id = ?
+AND done = TRUE
+`
+
+func (q *Queries) ListTasksDone(ctx context.Context, userID int64) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, listTasksDone, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Done,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const markTaskDone = `-- name: MarkTaskDone :one
+UPDATE tasks
+SET done = TRUE
+WHERE id = ?
+AND user_id = ?
+RETURNING id, user_id, done, description, created_at, updated_at
+`
+
+type MarkTaskDoneParams struct {
+	ID     int64
+	UserID int64
+}
+
+func (q *Queries) MarkTaskDone(ctx context.Context, arg MarkTaskDoneParams) (Task, error) {
+	row := q.db.QueryRowContext(ctx, markTaskDone, arg.ID, arg.UserID)
+	var i Task
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Done,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

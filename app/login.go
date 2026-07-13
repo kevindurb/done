@@ -15,8 +15,8 @@ type loginBody struct {
 	Password string `validate:"required"`
 }
 
-func (a *App) loginShow(w http.ResponseWriter, r *http.Request) (g.Node, error) {
-	return html.Layout(
+func (a *App) loginShow(w http.ResponseWriter, r *http.Request) {
+	html.Layout(
 		h.H1(g.Text("Login")),
 		h.Form(
 			h.Method(http.MethodPost),
@@ -32,7 +32,7 @@ func (a *App) loginShow(w http.ResponseWriter, r *http.Request) (g.Node, error) 
 			h.Button(h.Type("submit"), g.Text("Login")),
 			h.A(h.Href("/signup"), g.Text("Signup")),
 		),
-	), nil
+	).Render(w)
 }
 
 func (a *App) login(w http.ResponseWriter, r *http.Request) {
