@@ -8,9 +8,18 @@ import (
 	"database/sql"
 )
 
+type Project struct {
+	ID        int64
+	UserID    int64
+	Name      string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+}
+
 type Task struct {
 	ID          int64
 	UserID      int64
+	ProjectID   sql.NullInt64
 	Done        bool
 	Description string
 	CreatedAt   sql.NullTime

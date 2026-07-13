@@ -28,5 +28,13 @@ func (a *App) Router() chi.Router {
 		r.Post("/", a.tasksCreate)
 	})
 
+	r.With(a.requireAuth).Route("/projects", func(r chi.Router) {
+		r.Get("/{id}", a.projectsShow)
+		r.Get("/", a.projectsList)
+		r.Get("/new", a.projectsNew)
+		r.Get("/delete", a.projectsDelete)
+		r.Post("/", a.projectsCreate)
+	})
+
 	return r
 }

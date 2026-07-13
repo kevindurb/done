@@ -1,8 +1,9 @@
 -- name: CreateTask :one
 INSERT INTO tasks (
   user_id,
+  project_id,
   description
-) VALUES (?, ?)
+) VALUES (?, ?, ?)
 RETURNING *;
 
 -- name: ListTasks :many
@@ -11,10 +12,24 @@ FROM tasks
 WHERE user_id = ?
 AND done = FALSE;
 
+-- name: ListTasksByProject :many
+SELECT *
+FROM tasks
+WHERE user_id = ?
+AND project_id = ?
+AND done = FALSE;
+
 -- name: ListTasksDone :many
 SELECT *
 FROM tasks
 WHERE user_id = ?
+AND done = TRUE;
+
+-- name: ListTasksDoneByProject :many
+SELECT *
+FROM tasks
+WHERE user_id = ?
+AND project_id = ?
 AND done = TRUE;
 
 -- name: GetTask :one

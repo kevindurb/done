@@ -7,27 +7,31 @@ package sqlcgen
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createTask = `-- name: CreateTask :one
 INSERT INTO tasks (
   user_id,
+  project_id,
   description
-) VALUES (?, ?)
-RETURNING id, user_id, done, description, created_at, updated_at
+) VALUES (?, ?, ?)
+RETURNING id, user_id, project_id, done, description, created_at, updated_at
 `
 
 type CreateTaskParams struct {
 	UserID      int64
+	ProjectID   sql.NullInt64
 	Description string
 }
 
 func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
-	row := q.db.QueryRowContext(ctx, createTask, arg.UserID, arg.Description)
+	row := q.db.QueryRowContext(ctx, createTask, arg.UserID, arg.ProjectID, arg.Description)
 	var i Task
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.ProjectID,
 		&i.Done,
 		&i.Description,
 		&i.CreatedAt,
@@ -37,7 +41,7 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 }
 
 const getTask = `-- name: GetTask :one
-SELECT id, user_id, done, description, created_at, updated_at
+SELECT id, user_id, project_id, done, description, created_at, updated_at
 FROM tasks
 WHERE user_id = ?
 AND id = ?
@@ -54,6 +58,7 @@ func (q *Queries) GetTask(ctx context.Context, arg GetTaskParams) (Task, error) 
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.ProjectID,
 		&i.Done,
 		&i.Description,
 		&i.CreatedAt,
@@ -63,7 +68,7 @@ func (q *Queries) GetTask(ctx context.Context, arg GetTaskParams) (Task, error) 
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT id, user_id, done, description, created_at, updated_at
+SELECT id, user_id, project_id, done, description, created_at, updated_at
 FROM tasks
 WHERE user_id = ?
 AND done = FALSE
@@ -81,6 +86,51 @@ func (q *Queries) ListTasks(ctx context.Context, userID int64) ([]Task, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
+			&i.ProjectID,
+			&i.Done,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTasksByProject = `-- name: ListTasksByProject :many
+SELECT id, user_id, project_id, done, description, created_at, updated_at
+FROM tasks
+WHERE user_id = ?
+AND project_id = ?
+AND done = FALSE
+`
+
+type ListTasksByProjectParams struct {
+	UserID    int64
+	ProjectID sql.NullInt64
+}
+
+func (q *Queries) ListTasksByProject(ctx context.Context, arg ListTasksByProjectParams) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, listTasksByProject, arg.UserID, arg.ProjectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.ProjectID,
 			&i.Done,
 			&i.Description,
 			&i.CreatedAt,
@@ -100,7 +150,7 @@ func (q *Queries) ListTasks(ctx context.Context, userID int64) ([]Task, error) {
 }
 
 const listTasksDone = `-- name: ListTasksDone :many
-SELECT id, user_id, done, description, created_at, updated_at
+SELECT id, user_id, project_id, done, description, created_at, updated_at
 FROM tasks
 WHERE user_id = ?
 AND done = TRUE
@@ -118,6 +168,51 @@ func (q *Queries) ListTasksDone(ctx context.Context, userID int64) ([]Task, erro
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
+			&i.ProjectID,
+			&i.Done,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTasksDoneByProject = `-- name: ListTasksDoneByProject :many
+SELECT id, user_id, project_id, done, description, created_at, updated_at
+FROM tasks
+WHERE user_id = ?
+AND project_id = ?
+AND done = TRUE
+`
+
+type ListTasksDoneByProjectParams struct {
+	UserID    int64
+	ProjectID sql.NullInt64
+}
+
+func (q *Queries) ListTasksDoneByProject(ctx context.Context, arg ListTasksDoneByProjectParams) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, listTasksDoneByProject, arg.UserID, arg.ProjectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.ProjectID,
 			&i.Done,
 			&i.Description,
 			&i.CreatedAt,
@@ -141,7 +236,7 @@ UPDATE tasks
 SET done = TRUE
 WHERE id = ?
 AND user_id = ?
-RETURNING id, user_id, done, description, created_at, updated_at
+RETURNING id, user_id, project_id, done, description, created_at, updated_at
 `
 
 type MarkTaskDoneParams struct {
@@ -155,6 +250,7 @@ func (q *Queries) MarkTaskDone(ctx context.Context, arg MarkTaskDoneParams) (Tas
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.ProjectID,
 		&i.Done,
 		&i.Description,
 		&i.CreatedAt,

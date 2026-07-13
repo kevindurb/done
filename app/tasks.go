@@ -1,9 +1,11 @@
 package app
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/kevindurb/done/html"
 	"github.com/kevindurb/done/httpx"
@@ -14,6 +16,7 @@ import (
 
 type tasksCreateBody struct {
 	Description string `validate:"required"`
+	ProjectID   int64
 }
 
 func (a *App) tasksList(w http.ResponseWriter, r *http.Request) {
@@ -28,18 +31,8 @@ func (a *App) tasksList(w http.ResponseWriter, r *http.Request) {
 	html.Layout(
 		h.H1(g.Text("Tasks")),
 		h.A(h.Href("/tasks/new"), g.Text("Add Task")),
-		h.Ul(
-			g.Map(tasks, func(t sqlcgen.Task) g.Node {
-				return h.Li(
-					h.Form(
-						h.Method(http.MethodPost),
-						h.Action(fmt.Sprintf("/tasks/%d/done", t.ID)),
-						h.Button(h.Type("submit"), g.Text("Mark Done")),
-						h.A(h.Href(fmt.Sprintf("/tasks/%d", t.ID)), g.Text(t.Description)),
-					),
-				)
-			}),
-		),
+		h.A(h.Href("/projects/new"), g.Text("Add Project")),
+		html.TasksList(tasks),
 		h.A(h.Href("/tasks/done"), g.Text("Show Done")),
 	).Render(w)
 }
@@ -67,12 +60,29 @@ func (a *App) tasksListDone(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) tasksNew(w http.ResponseWriter, r *http.Request) {
+	userID := a.mustUserID(r)
+	projects, err := a.q.ListProjects(r.Context(), userID)
+	if err != nil {
+		log.Printf("Error getting projects for user (%d): %v", userID, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	html.Layout(
 		h.H1(g.Text("New Task")),
 		h.Form(
 			h.Method(http.MethodPost),
 			h.Action("/tasks"),
-			h.Input(h.Type("text"), h.Name("Description")),
+			h.Div(
+				h.Select(
+					h.Name("ProjectID"),
+					h.Option(h.Value("0"), g.Text("Default")),
+					g.Map(projects, func(p sqlcgen.Project) g.Node {
+						return h.Option(h.Value(strconv.FormatInt(p.ID, 10)), g.Text(p.Name))
+					}),
+				),
+			),
+			h.Input(h.Type("text"), h.Required(), h.Name("Description")),
 			h.Button(h.Type("submit"), g.Text("Add")),
 		),
 	).Render(w)
@@ -90,6 +100,7 @@ func (a *App) tasksCreate(w http.ResponseWriter, r *http.Request) {
 	_, err := a.q.CreateTask(r.Context(), sqlcgen.CreateTaskParams{
 		UserID:      userID,
 		Description: body.Description,
+		ProjectID:   sql.NullInt64{Int64: body.ProjectID, Valid: body.ProjectID > 0},
 	})
 
 	if err != nil {
