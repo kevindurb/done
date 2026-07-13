@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/kevindurb/done/html"
+	"github.com/kevindurb/done/html/components"
 	"github.com/kevindurb/done/html/layouts"
 	"github.com/kevindurb/done/httpx"
 	"github.com/kevindurb/done/sqlcgen"
@@ -33,7 +33,7 @@ func (a *App) tasksList(w http.ResponseWriter, r *http.Request) {
 		h.H1(g.Text("Tasks")),
 		h.A(h.Href("/tasks/new"), g.Text("Add Task")),
 		h.A(h.Href("/projects/new"), g.Text("Add Project")),
-		html.TasksList(tasks),
+		components.TasksList(tasks),
 		h.A(h.Href("/tasks/done"), g.Text("Show Done")),
 	).Render(w)
 }

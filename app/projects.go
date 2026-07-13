@@ -2,16 +2,12 @@ package app
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/kevindurb/done/html"
-	"github.com/kevindurb/done/html/layouts"
+	"github.com/kevindurb/done/html/pages"
 	"github.com/kevindurb/done/httpx"
 	"github.com/kevindurb/done/sqlcgen"
-	g "maragu.dev/gomponents"
-	h "maragu.dev/gomponents/html"
 )
 
 type projectsCreateBody struct {
@@ -27,30 +23,13 @@ func (a *App) projectsList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	layouts.Layout(
-		h.A(h.Href("/"), g.Text("< Back")),
-		h.H1(g.Text("Projects")),
-		h.A(h.Href("/projects/new"), g.Text("Add Project")),
-		h.Ul(
-			g.Map(projects, func(t sqlcgen.Project) g.Node {
-				return h.Li(
-					h.A(h.Href(fmt.Sprintf("/projects/%d", t.ID)), g.Text(t.Name)),
-				)
-			}),
-		),
-	).Render(w)
+	pages.ProjectsList(pages.ProjectsListData{
+		Projects: projects,
+	}).Render(w)
 }
 
 func (a *App) projectsNew(w http.ResponseWriter, r *http.Request) {
-	layouts.Layout(
-		h.H1(g.Text("New Project")),
-		h.Form(
-			h.Method(http.MethodPost),
-			h.Action("/projects"),
-			h.Input(h.Type("text"), h.Name("Name")),
-			h.Button(h.Type("submit"), g.Text("Add")),
-		),
-	).Render(w)
+	pages.ProjectsNew().Render(w)
 }
 
 func (a *App) projectsCreate(w http.ResponseWriter, r *http.Request) {
@@ -101,11 +80,10 @@ func (a *App) projectsShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	layouts.Layout(
-		h.A(h.Href("/projects"), g.Text("< Back")),
-		h.H1(g.Text(project.Name)),
-		html.TasksList(tasks),
-	).Render(w)
+	pages.ProjectsShow(pages.ProjectsShowData{
+		Project: project,
+		Tasks:   tasks,
+	}).Render(w)
 }
 
 func (a *App) projectsDelete(w http.ResponseWriter, r *http.Request) {
