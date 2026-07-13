@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/kevindurb/done/html"
+	"github.com/kevindurb/done/html/layouts"
 	"github.com/kevindurb/done/httpx"
 	"github.com/kevindurb/done/sqlcgen"
 	g "maragu.dev/gomponents"
@@ -28,7 +29,7 @@ func (a *App) tasksList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html.Layout(
+	layouts.Layout(
 		h.H1(g.Text("Tasks")),
 		h.A(h.Href("/tasks/new"), g.Text("Add Task")),
 		h.A(h.Href("/projects/new"), g.Text("Add Project")),
@@ -46,7 +47,7 @@ func (a *App) tasksListDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html.Layout(
+	layouts.Layout(
 		h.A(h.Href("/tasks"), g.Text("< Back")),
 		h.H1(g.Text("Done Tasks")),
 		h.Ul(
@@ -68,7 +69,7 @@ func (a *App) tasksNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html.Layout(
+	layouts.Layout(
 		h.H1(g.Text("New Task")),
 		h.Form(
 			h.Method(http.MethodPost),
@@ -126,7 +127,7 @@ func (a *App) tasksShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html.Layout(
+	layouts.Layout(
 		h.A(h.Href("/tasks"), g.Text("< Back")),
 		h.H1(g.Text(task.Description)),
 	).Render(w)

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kevindurb/done/html"
+	"github.com/kevindurb/done/html/layouts"
 	"golang.org/x/crypto/bcrypt"
 	g "maragu.dev/gomponents"
 	h "maragu.dev/gomponents/html"
@@ -16,7 +16,7 @@ type loginBody struct {
 }
 
 func (a *App) loginShow(w http.ResponseWriter, r *http.Request) {
-	html.Layout(
+	layouts.Layout(
 		h.H1(g.Text("Login")),
 		h.Form(
 			h.Method(http.MethodPost),

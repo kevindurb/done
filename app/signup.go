@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kevindurb/done/html"
+	"github.com/kevindurb/done/html/layouts"
 	"github.com/kevindurb/done/sqlcgen"
 	"golang.org/x/crypto/bcrypt"
 	g "maragu.dev/gomponents"
@@ -17,7 +17,7 @@ type signupBody struct {
 }
 
 func (a *App) signupShow(w http.ResponseWriter, r *http.Request) {
-	html.Layout(
+	layouts.Layout(
 		h.H1(g.Text("Signup")),
 		h.Form(
 			h.Method(http.MethodPost),

@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/kevindurb/done/html"
+	"github.com/kevindurb/done/html/layouts"
 	"github.com/kevindurb/done/httpx"
 	"github.com/kevindurb/done/sqlcgen"
 	g "maragu.dev/gomponents"
@@ -26,7 +27,7 @@ func (a *App) projectsList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html.Layout(
+	layouts.Layout(
 		h.A(h.Href("/"), g.Text("< Back")),
 		h.H1(g.Text("Projects")),
 		h.A(h.Href("/projects/new"), g.Text("Add Project")),
@@ -41,7 +42,7 @@ func (a *App) projectsList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) projectsNew(w http.ResponseWriter, r *http.Request) {
-	html.Layout(
+	layouts.Layout(
 		h.H1(g.Text("New Project")),
 		h.Form(
 			h.Method(http.MethodPost),
@@ -100,7 +101,7 @@ func (a *App) projectsShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html.Layout(
+	layouts.Layout(
 		h.A(h.Href("/projects"), g.Text("< Back")),
 		h.H1(g.Text(project.Name)),
 		html.TasksList(tasks),
