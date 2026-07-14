@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/kevindurb/done/html"
 	c "github.com/kevindurb/done/html/components"
 	"github.com/kevindurb/done/html/layouts"
 	"github.com/kevindurb/done/sqlcgen"
@@ -52,6 +53,11 @@ func ProjectsShow(data ProjectsShowData) g.Node {
 	return layouts.Layout(
 		h.A(h.Href("/projects"), g.Text("< Back")),
 		h.H1(g.Text(data.Project.Name)),
+		h.Form(
+			h.Method("POST"),
+			html.Actionf("/projects/%d/delete", data.Project.ID),
+			h.Button(h.Type("submit"), g.Text("Delete")),
+		),
 		c.TasksList(c.TasksListData{Tasks: data.Tasks}),
 	)
 }

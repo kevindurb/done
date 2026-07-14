@@ -12,7 +12,7 @@ import (
 
 type tasksCreateBody struct {
 	Description string `validate:"required"`
-	Due         string `validate:"regexp=^\\d\\d\\d\\d-\\d\\d-\\d\\d$"`
+	Due         string `validate:"omitempty,datetime=2006-01-02"`
 	ProjectID   int64
 }
 
@@ -114,6 +114,34 @@ func (a *App) tasksMarkDone(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Printf("Error marking task (%d) done for user (%d): %v", id, userID, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/tasks", http.StatusFound)
+}
+
+func (a *App) tasksDelete(w http.ResponseWriter, r *http.Request) {
+	id := httpx.PathInt("id", r)
+	userID := a.mustUserID(r)
+	task, err := a.q.GetTask(r.Context(), sqlcgen.GetTaskParams{
+		ID:     id,
+		UserID: userID,
+	})
+
+	if err != nil {
+		log.Printf("Error getting task (%d) for user (%d): %v", id, userID, err)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	err = a.q.DeleteTask(r.Context(), sqlcgen.DeleteTaskParams{
+		ID:     task.ID,
+		UserID: userID,
+	})
+
+	if err != nil {
+		log.Printf("Error deleting task (%d) for user (%d): %v", id, userID, err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

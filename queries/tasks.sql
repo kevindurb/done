@@ -47,3 +47,8 @@ SET done = TRUE
 WHERE id = ?
 AND user_id = ?
 RETURNING *;
+
+-- name: DeleteTask :exec
+DELETE FROM tasks
+WHERE id = ?
+AND user_id = ?;

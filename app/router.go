@@ -20,20 +20,27 @@ func (a *App) Router() chi.Router {
 	r.Post("/signup", a.signup)
 
 	r.With(a.requireAuth).Route("/tasks", func(r chi.Router) {
-		r.Get("/{id}", a.tasksShow)
-		r.Post("/{id}/done", a.tasksMarkDone)
+		r.Route("/{id}", func(r chi.Router) {
+			r.Get("/", a.tasksShow)
+			r.Post("/done", a.tasksMarkDone)
+			r.Post("/delete", a.tasksDelete)
+		})
+
 		r.Get("/", a.tasksList)
-		r.Get("/done", a.tasksListDone)
-		r.Get("/new", a.tasksNew)
 		r.Post("/", a.tasksCreate)
+		r.Get("/new", a.tasksNew)
+		r.Get("/done", a.tasksListDone)
 	})
 
 	r.With(a.requireAuth).Route("/projects", func(r chi.Router) {
-		r.Get("/{id}", a.projectsShow)
+		r.Route("/{id}", func(r chi.Router) {
+			r.Get("/", a.projectsShow)
+			r.Post("/delete", a.projectsDelete)
+		})
+
 		r.Get("/", a.projectsList)
-		r.Get("/new", a.projectsNew)
-		r.Get("/delete", a.projectsDelete)
 		r.Post("/", a.projectsCreate)
+		r.Get("/new", a.projectsNew)
 	})
 
 	return r

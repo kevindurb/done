@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/kevindurb/done/html"
 	c "github.com/kevindurb/done/html/components"
 	"github.com/kevindurb/done/html/layouts"
 	"github.com/kevindurb/done/sqlcgen"
@@ -78,5 +79,10 @@ func TasksShow(data TasksShowData) g.Node {
 	return layouts.Layout(
 		h.A(h.Href("/tasks"), g.Text("< Back")),
 		h.H1(g.Text(data.Task.Description)),
+		h.Form(
+			h.Method("POST"),
+			html.Actionf("/tasks/%d/delete", data.Task.ID),
+			h.Button(h.Type("submit"), g.Text("Delete")),
+		),
 	)
 }
