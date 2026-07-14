@@ -32,6 +32,7 @@ func ProjectsList(data ProjectsListData) g.Node {
 
 func ProjectsNew() g.Node {
 	return layouts.Layout(
+		h.A(h.Href("/projects"), g.Text("< Back")),
 		h.H1(g.Text("New Project")),
 		h.Form(
 			h.Method(http.MethodPost),

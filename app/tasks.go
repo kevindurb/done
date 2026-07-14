@@ -2,17 +2,12 @@ package app
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
-	"github.com/kevindurb/done/html/components"
-	"github.com/kevindurb/done/html/layouts"
+	"github.com/kevindurb/done/html/pages"
 	"github.com/kevindurb/done/httpx"
 	"github.com/kevindurb/done/sqlcgen"
-	g "maragu.dev/gomponents"
-	h "maragu.dev/gomponents/html"
 )
 
 type tasksCreateBody struct {
@@ -29,13 +24,7 @@ func (a *App) tasksList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	layouts.Layout(
-		h.H1(g.Text("Tasks")),
-		h.A(h.Href("/tasks/new"), g.Text("Add Task")),
-		h.A(h.Href("/projects/new"), g.Text("Add Project")),
-		components.TasksList(tasks),
-		h.A(h.Href("/tasks/done"), g.Text("Show Done")),
-	).Render(w)
+	pages.TasksList(pages.TasksListData{Tasks: tasks}).Render(w)
 }
 
 func (a *App) tasksListDone(w http.ResponseWriter, r *http.Request) {
@@ -47,17 +36,7 @@ func (a *App) tasksListDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	layouts.Layout(
-		h.A(h.Href("/tasks"), g.Text("< Back")),
-		h.H1(g.Text("Done Tasks")),
-		h.Ul(
-			g.Map(tasks, func(t sqlcgen.Task) g.Node {
-				return h.Li(
-					h.A(h.Href(fmt.Sprintf("/tasks/%d", t.ID)), g.Text(t.Description)),
-				)
-			}),
-		),
-	).Render(w)
+	pages.TasksList(pages.TasksListData{Tasks: tasks}).Render(w)
 }
 
 func (a *App) tasksNew(w http.ResponseWriter, r *http.Request) {
@@ -69,24 +48,7 @@ func (a *App) tasksNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	layouts.Layout(
-		h.H1(g.Text("New Task")),
-		h.Form(
-			h.Method(http.MethodPost),
-			h.Action("/tasks"),
-			h.Div(
-				h.Select(
-					h.Name("ProjectID"),
-					h.Option(h.Value("0"), g.Text("Default")),
-					g.Map(projects, func(p sqlcgen.Project) g.Node {
-						return h.Option(h.Value(strconv.FormatInt(p.ID, 10)), g.Text(p.Name))
-					}),
-				),
-			),
-			h.Input(h.Type("text"), h.Required(), h.Name("Description")),
-			h.Button(h.Type("submit"), g.Text("Add")),
-		),
-	).Render(w)
+	pages.TasksNew(pages.TasksNewData{Projects: projects}).Render(w)
 }
 
 func (a *App) tasksCreate(w http.ResponseWriter, r *http.Request) {
@@ -127,10 +89,7 @@ func (a *App) tasksShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	layouts.Layout(
-		h.A(h.Href("/tasks"), g.Text("< Back")),
-		h.H1(g.Text(task.Description)),
-	).Render(w)
+	pages.TasksShow(pages.TasksShowData{Task: task}).Render(w)
 }
 
 func (a *App) tasksMarkDone(w http.ResponseWriter, r *http.Request) {

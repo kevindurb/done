@@ -2,8 +2,10 @@ package app
 
 import (
 	"net/http"
+
+	"github.com/kevindurb/done/html/pages"
 )
 
 func (a *App) home(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/tasks", http.StatusFound)
+	pages.Home().Render(w)
 }
