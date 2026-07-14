@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/kevindurb/done/html/components"
+	c "github.com/kevindurb/done/html/components"
 	"github.com/kevindurb/done/html/layouts"
 	"github.com/kevindurb/done/sqlcgen"
 	g "maragu.dev/gomponents"
@@ -26,7 +26,7 @@ func TasksList(data TasksListData) g.Node {
 		h.A(h.Href(backPath), g.Text("< Back")),
 		h.H1(g.Text("Tasks")),
 		h.A(h.Href("/tasks/new"), g.Text("Add Task")),
-		components.TasksList(components.TasksListData{Tasks: data.Tasks, Done: data.Done}),
+		c.TasksList(c.TasksListData{Tasks: data.Tasks, Done: data.Done}),
 		g.If(!data.Done,
 			h.A(h.Href("/tasks/done"), g.Text("Show Done")),
 		),

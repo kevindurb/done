@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kevindurb/done/html/components"
+	c "github.com/kevindurb/done/html/components"
 	"github.com/kevindurb/done/html/layouts"
 	"github.com/kevindurb/done/sqlcgen"
 	g "maragu.dev/gomponents"
@@ -52,6 +52,6 @@ func ProjectsShow(data ProjectsShowData) g.Node {
 	return layouts.Layout(
 		h.A(h.Href("/projects"), g.Text("< Back")),
 		h.H1(g.Text(data.Project.Name)),
-		components.TasksList(components.TasksListData{Tasks: data.Tasks}),
+		c.TasksList(c.TasksListData{Tasks: data.Tasks}),
 	)
 }
