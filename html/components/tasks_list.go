@@ -24,6 +24,7 @@ func TasksList(data TasksListData) g.Node {
 					g.If(!data.Done,
 						h.Button(h.Type("submit"), g.Text("Mark Done")),
 					),
+					g.If(t.Due.Valid, g.Text(t.Due.String)),
 					h.A(h.Href(fmt.Sprintf("/tasks/%d", t.ID)), g.Text(t.Description)),
 				),
 			)
