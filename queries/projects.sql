@@ -1,7 +1,8 @@
 -- name: ListProjects :many
 SELECT *
 FROM projects
-WHERE user_id = ?;
+WHERE user_id = ?
+ORDER BY name ASC, created_at DESC;
 
 -- name: GetProject :one
 SELECT *

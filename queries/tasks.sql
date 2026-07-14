@@ -10,14 +10,16 @@ RETURNING *;
 SELECT *
 FROM tasks
 WHERE user_id = ?
-AND done = FALSE;
+AND done = FALSE
+ORDER BY due ASC, created_at DESC;
 
 -- name: ListTasksByProject :many
 SELECT *
 FROM tasks
 WHERE user_id = ?
 AND project_id = ?
-AND done = FALSE;
+AND done = FALSE
+ORDER BY due ASC, created_at DESC;
 
 -- name: ListTasksDone :many
 SELECT *
@@ -30,7 +32,8 @@ SELECT *
 FROM tasks
 WHERE user_id = ?
 AND project_id = ?
-AND done = TRUE;
+AND done = TRUE
+ORDER BY due ASC, created_at DESC;
 
 -- name: GetTask :one
 SELECT *

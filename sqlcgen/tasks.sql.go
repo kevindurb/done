@@ -16,7 +16,7 @@ INSERT INTO tasks (
   project_id,
   description
 ) VALUES (?, ?, ?)
-RETURNING id, user_id, project_id, done, description, created_at, updated_at
+RETURNING id, user_id, project_id, done, description, created_at, updated_at, due
 `
 
 type CreateTaskParams struct {
@@ -36,12 +36,13 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Due,
 	)
 	return i, err
 }
 
 const getTask = `-- name: GetTask :one
-SELECT id, user_id, project_id, done, description, created_at, updated_at
+SELECT id, user_id, project_id, done, description, created_at, updated_at, due
 FROM tasks
 WHERE user_id = ?
 AND id = ?
@@ -63,15 +64,17 @@ func (q *Queries) GetTask(ctx context.Context, arg GetTaskParams) (Task, error) 
 		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Due,
 	)
 	return i, err
 }
 
 const listTasks = `-- name: ListTasks :many
-SELECT id, user_id, project_id, done, description, created_at, updated_at
+SELECT id, user_id, project_id, done, description, created_at, updated_at, due
 FROM tasks
 WHERE user_id = ?
 AND done = FALSE
+ORDER BY due ASC, created_at DESC
 `
 
 func (q *Queries) ListTasks(ctx context.Context, userID int64) ([]Task, error) {
@@ -91,6 +94,7 @@ func (q *Queries) ListTasks(ctx context.Context, userID int64) ([]Task, error) {
 			&i.Description,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Due,
 		); err != nil {
 			return nil, err
 		}
@@ -106,11 +110,12 @@ func (q *Queries) ListTasks(ctx context.Context, userID int64) ([]Task, error) {
 }
 
 const listTasksByProject = `-- name: ListTasksByProject :many
-SELECT id, user_id, project_id, done, description, created_at, updated_at
+SELECT id, user_id, project_id, done, description, created_at, updated_at, due
 FROM tasks
 WHERE user_id = ?
 AND project_id = ?
 AND done = FALSE
+ORDER BY due ASC, created_at DESC
 `
 
 type ListTasksByProjectParams struct {
@@ -135,6 +140,7 @@ func (q *Queries) ListTasksByProject(ctx context.Context, arg ListTasksByProject
 			&i.Description,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Due,
 		); err != nil {
 			return nil, err
 		}
@@ -150,7 +156,7 @@ func (q *Queries) ListTasksByProject(ctx context.Context, arg ListTasksByProject
 }
 
 const listTasksDone = `-- name: ListTasksDone :many
-SELECT id, user_id, project_id, done, description, created_at, updated_at
+SELECT id, user_id, project_id, done, description, created_at, updated_at, due
 FROM tasks
 WHERE user_id = ?
 AND done = TRUE
@@ -173,6 +179,7 @@ func (q *Queries) ListTasksDone(ctx context.Context, userID int64) ([]Task, erro
 			&i.Description,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Due,
 		); err != nil {
 			return nil, err
 		}
@@ -188,11 +195,12 @@ func (q *Queries) ListTasksDone(ctx context.Context, userID int64) ([]Task, erro
 }
 
 const listTasksDoneByProject = `-- name: ListTasksDoneByProject :many
-SELECT id, user_id, project_id, done, description, created_at, updated_at
+SELECT id, user_id, project_id, done, description, created_at, updated_at, due
 FROM tasks
 WHERE user_id = ?
 AND project_id = ?
 AND done = TRUE
+ORDER BY due ASC, created_at DESC
 `
 
 type ListTasksDoneByProjectParams struct {
@@ -217,6 +225,7 @@ func (q *Queries) ListTasksDoneByProject(ctx context.Context, arg ListTasksDoneB
 			&i.Description,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Due,
 		); err != nil {
 			return nil, err
 		}
@@ -236,7 +245,7 @@ UPDATE tasks
 SET done = TRUE
 WHERE id = ?
 AND user_id = ?
-RETURNING id, user_id, project_id, done, description, created_at, updated_at
+RETURNING id, user_id, project_id, done, description, created_at, updated_at, due
 `
 
 type MarkTaskDoneParams struct {
@@ -255,6 +264,7 @@ func (q *Queries) MarkTaskDone(ctx context.Context, arg MarkTaskDoneParams) (Tas
 		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Due,
 	)
 	return i, err
 }

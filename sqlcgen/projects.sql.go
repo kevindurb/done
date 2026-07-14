@@ -80,6 +80,7 @@ const listProjects = `-- name: ListProjects :many
 SELECT id, user_id, name, created_at, updated_at
 FROM projects
 WHERE user_id = ?
+ORDER BY name ASC, created_at DESC
 `
 
 func (q *Queries) ListProjects(ctx context.Context, userID int64) ([]Project, error) {

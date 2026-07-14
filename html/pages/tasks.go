@@ -45,16 +45,27 @@ func TasksNew(data TasksNewData) g.Node {
 			h.Method(http.MethodPost),
 			h.Action("/tasks"),
 			h.Div(
+				h.Label(h.For("ProjectID"), g.Text("Project")),
 				h.Select(
 					h.Name("ProjectID"),
+					h.ID("ProjectID"),
 					h.Option(h.Value("0"), g.Text("Default")),
 					g.Map(data.Projects, func(p sqlcgen.Project) g.Node {
 						return h.Option(h.Value(strconv.FormatInt(p.ID, 10)), g.Text(p.Name))
 					}),
 				),
 			),
-			h.Input(h.Type("text"), h.Required(), h.Name("Description")),
-			h.Button(h.Type("submit"), g.Text("Add")),
+			h.Div(
+				h.Label(h.For("Description"), g.Text("Description")),
+				h.Input(h.Type("text"), h.Required(), h.ID("Description"), h.Name("Description")),
+			),
+			h.Div(
+				h.Label(h.For("Due"), g.Text("Due")),
+				h.Input(h.Type("date"), h.ID("Due"), h.Name("Due")),
+			),
+			h.Div(
+				h.Button(h.Type("submit"), g.Text("Add")),
+			),
 		),
 	)
 }

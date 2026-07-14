@@ -12,6 +12,7 @@ import (
 
 type tasksCreateBody struct {
 	Description string `validate:"required"`
+	Due         string `validate:"regexp=^\\d\\d\\d\\d-\\d\\d-\\d\\d$"`
 	ProjectID   int64
 }
 

@@ -24,6 +24,7 @@ type Task struct {
 	Description string
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
+	Due         sql.NullString
 }
 
 type User struct {
