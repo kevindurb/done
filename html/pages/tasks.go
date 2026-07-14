@@ -13,15 +13,23 @@ import (
 
 type TasksListData struct {
 	Tasks []sqlcgen.Task
+	Done  bool
 }
 
 func TasksList(data TasksListData) g.Node {
+	backPath := "/"
+	if data.Done {
+		backPath = "/tasks"
+	}
+
 	return layouts.Layout(
-		h.A(h.Href("/"), g.Text("< Back")),
+		h.A(h.Href(backPath), g.Text("< Back")),
 		h.H1(g.Text("Tasks")),
 		h.A(h.Href("/tasks/new"), g.Text("Add Task")),
-		components.TasksList(data.Tasks),
-		h.A(h.Href("/tasks/done"), g.Text("Show Done")),
+		components.TasksList(components.TasksListData{Tasks: data.Tasks, Done: data.Done}),
+		g.If(!data.Done,
+			h.A(h.Href("/tasks/done"), g.Text("Show Done")),
+		),
 	)
 }
 

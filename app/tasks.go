@@ -36,7 +36,7 @@ func (a *App) tasksListDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pages.TasksList(pages.TasksListData{Tasks: tasks}).Render(w)
+	pages.TasksList(pages.TasksListData{Tasks: tasks, Done: true}).Render(w)
 }
 
 func (a *App) tasksNew(w http.ResponseWriter, r *http.Request) {

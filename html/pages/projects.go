@@ -52,6 +52,6 @@ func ProjectsShow(data ProjectsShowData) g.Node {
 	return layouts.Layout(
 		h.A(h.Href("/projects"), g.Text("< Back")),
 		h.H1(g.Text(data.Project.Name)),
-		components.TasksList(data.Tasks),
+		components.TasksList(components.TasksListData{Tasks: data.Tasks}),
 	)
 }
