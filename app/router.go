@@ -13,11 +13,17 @@ func (a *App) Router() chi.Router {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(60 * time.Second))
 
+	r.Route("/login", func(r chi.Router) {
+		r.Get("/", a.loginShow)
+		r.Post("/", a.login)
+	})
+
+	r.Route("/signup", func(r chi.Router) {
+		r.Get("/", a.signupShow)
+		r.Post("/", a.signup)
+	})
+
 	r.With(a.requireAuth).Get("/", a.home)
-	r.Get("/login", a.loginShow)
-	r.Post("/login", a.login)
-	r.Get("/signup", a.signupShow)
-	r.Post("/signup", a.signup)
 
 	r.With(a.requireAuth).Route("/tasks", func(r chi.Router) {
 		r.Route("/{id}", func(r chi.Router) {
